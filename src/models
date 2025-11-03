@@ -1,0 +1,84 @@
+// This file defines the data models for the Hotel Book application using an ORM like Sequelize.
+
+const { Sequelize, DataTypes } = require('sequelize');
+const sequelize = new Sequelize('sqlite::memory:'); // Example using SQLite, adjust for your database
+
+const User = sequelize.define('User', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    username: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    },
+    password: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    }
+});
+
+const Hotel = sequelize.define('Hotel', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    location: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    rating: {
+        type: DataTypes.FLOAT,
+        allowNull: true
+    }
+});
+
+const Booking = sequelize.define('Booking', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    userId: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: User,
+            key: 'id'
+        }
+    },
+    hotelId: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: Hotel,
+            key: 'id'
+        }
+    },
+    checkInDate: {
+        type: DataTypes.DATE,
+        allowNull: false
+    },
+    checkOutDate: {
+        type: DataTypes.DATE,
+        allowNull: false
+    }
+});
+
+// Associations
+User.hasMany(Booking);
+Hotel.hasMany(Booking);
+Booking.belongsTo(User);
+Booking.belongsTo(Hotel);
+
+module.exports = { User, Hotel, Booking, sequelize };
